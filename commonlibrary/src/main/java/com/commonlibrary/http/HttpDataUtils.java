@@ -11,6 +11,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
 
+import java.util.concurrent.TimeUnit;
+import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
@@ -21,30 +23,36 @@ public class HttpDataUtils {
 
     private final static String TAG = "HttpDataUtils";
 
-    public static byte[] getByteData(String url, HashMap<String, String> params, HashMap<String, String> headers){
-        InputStream stream = getData(url,params,headers);
-        if(stream!=null){
-            byte[] buffer = new byte[1024];
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    public static byte[] getByteData(String url, HashMap<String, String> params, HashMap<String, String> headers,int timeout){
+        Response response = getData(url,params,headers,timeout);
+        if(response!=null && response.isSuccessful()){
             try {
-                int ret = 0;
-                while (((ret = stream.read(buffer)))!=0){
-                    baos.write(buffer,0,ret);
-                }
-
-                byte[] data = baos.toByteArray();
-                baos.flush();
-                baos.close();
-                stream.close();
-                return data;
+                return response.body().bytes();
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.e(TAG, "getData request error", e);
             }
         }
         return null;
     }
 
-    public static InputStream getData(String url, HashMap<String, String> params, HashMap<String, String> headers) {
+    public static InputStream getStreamData(String url, HashMap<String, String> params, HashMap<String, String> headers,int timeout) {
+        Response response = getData(url,params,headers,timeout);
+        if(response!=null && response.isSuccessful()){
+            return response.body().byteStream();
+        }
+        return null;
+    }
+
+  /**
+   * get the data from net
+   *
+   * @param url
+   * @param params
+   * @param headers
+   * @param timeout
+   * @return
+   */
+    public static Response getData(String url, HashMap<String, String> params, HashMap<String, String> headers,int timeout) {
         Log.d(TAG, "getData:" + url);
 
         if (StringUtils.isEmpty(url))
@@ -81,7 +89,7 @@ public class HttpDataUtils {
             Response response = OkHttpManager.getInstance().getOkHttpClient().newCall(request).execute();
             Log.d(TAG, "getData response code=" + response.code() + ",content-length=" + response.body().contentLength());
             if (response.isSuccessful())
-                return response.body().byteStream();
+                return response;
         } catch (IOException e) {
             Log.e(TAG, "getData request error", e);
         }

@@ -1,5 +1,6 @@
 package com.commonlibrary.http;
 
+import java.util.concurrent.TimeUnit;
 import okhttp3.OkHttpClient;
 
 /**
@@ -19,8 +20,12 @@ public class OkHttpManager {
     private OkHttpClient mClient;
 
     public OkHttpClient getOkHttpClient(){
-        if(mClient == null)
+        if(mClient == null) {
+            OkHttpClient.Builder builder = new OkHttpClient.Builder();
+            builder.connectTimeout(30000, TimeUnit.SECONDS);
+            builder.readTimeout(30000, TimeUnit.SECONDS);
             mClient = new OkHttpClient();
+        }
 
         return mClient;
     }
