@@ -4,18 +4,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.TextView;
 
-import com.commonlibrary.http.HttpDataUtils;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import com.commonlibrary.http.HttpDataManager;
 
 import rx.Observable;
-import rx.Scheduler;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
-import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity {
@@ -29,11 +22,11 @@ public class MainActivity extends AppCompatActivity {
 
         label = (TextView) findViewById(R.id.label);
 
-        final String url = "http://www.bejson.com/";
+        final String url = "http://www.baidu.com/";
         Observable.create(new Observable.OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> subscriber) {
-                byte[] data = HttpDataUtils.getByteData(url, null, null);
+                byte[] data = HttpDataManager.getInstance().getSupplier().getData(url, null, null,30000);
                 if (data != null) {
                     subscriber.onNext(new String(data));
                     subscriber.onCompleted();
