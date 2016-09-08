@@ -5,7 +5,7 @@ package com.commonlibrary.http;
  *
  * 外接给外面的http请求工具类,可以指定supplier,默认使用okhttp的supplier
  *
- * @see HttpDataSupplier
+ * {@link HttpDataSupplier}
  */
 public class HttpDataManager {
 

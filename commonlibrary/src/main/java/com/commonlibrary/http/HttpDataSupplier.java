@@ -6,6 +6,8 @@ import java.util.Map;
 
 /**
  * Created by huangzefeng on 8/9/16.
+ *
+ * http内容的提供商,具体可以使用其他框架来实现相应的supplier.然后在{@link HttpDataManager}设置
  */
 public interface HttpDataSupplier {
 
