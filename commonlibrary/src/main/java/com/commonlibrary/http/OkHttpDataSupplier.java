@@ -27,11 +27,13 @@ public class OkHttpDataSupplier implements HttpDataSupplier {
     private static final String TAG = "OkHttpDataSupplier";
 
     @Override
-    public byte[] getData(String url, Map<String, String> params, Map<String, String> headers, int timeout) {
+    public PostResponse getData(String url, Map<String, String> params, Map<String, String> headers, int timeout) {
         Log.d(TAG, "getData:" + url);
-
-        if (StringUtils.isEmpty(url))
-            throw new NullPointerException("The request url must not be null.");
+        PostResponse pr = new PostResponse();
+        if (StringUtils.isEmpty(url)) {
+            pr.setCode(-1);
+            pr.setMessage("The request url must not be null.");
+        }
 
         StringBuffer buffer = new StringBuffer(url);
         if (params != null && params.size() > 0) {
@@ -48,6 +50,8 @@ public class OkHttpDataSupplier implements HttpDataSupplier {
                 }
             } catch (UnsupportedEncodingException e) {
                 Log.e(TAG, "getData generate url error", e);
+                pr.setCode(-2);
+                pr.setMessage("getData generate url error");
             }
         }
 
@@ -55,31 +59,44 @@ public class OkHttpDataSupplier implements HttpDataSupplier {
 
         Request.Builder builder = new Request.Builder().url(buffer.toString());
         if (headers != null && headers.size() > 0) {
+            //headerBuffer for log
+            StringBuffer headerBuffer = new StringBuffer("[");
             for (String name : headers.keySet()) {
-                builder = builder.header(name, headers.get(name));
+                String value = headers.get(name);
+                builder = builder.header(name, value);
+
+                headerBuffer.append(name);
+                headerBuffer.append("=");
+                headerBuffer.append(value);
+                headerBuffer.append(",");
             }
+            headerBuffer.append("]");
+            Log.d(TAG, "postData headers:" + headerBuffer);
         }
         Request request = builder.build();
         try {
             Response response = OkHttpManager.getInstance().getOkHttpClient().newCall(request).execute();
             Log.d(TAG, "getData response code=" + response.code());
-            if (response.isSuccessful()) {
-                return response.body().bytes();
-            }
+            pr = generateResponse(response);
         } catch (IOException e) {
             Log.e(TAG, "getData request error", e);
+            pr.setCode(-3);
+            pr.setMessage("getData request error");
         }
 
-        Log.d(TAG, "getData response error");
-        return null;
+        return pr;
     }
 
+
     @Override
-    public byte[] postData(String url, Map<String, String> params, Map<String, String> headers, int timeout) {
+    public PostResponse postData(String url, Map<String, String> params, Map<String, String> headers, int timeout) {
         Log.d(TAG, "postData:" + url);
 
-        if (StringUtils.isEmpty(url))
-            throw new NullPointerException("The request url must not be null.");
+        PostResponse pr = new PostResponse();
+        if (StringUtils.isEmpty(url)) {
+            pr.setCode(-1);
+            pr.setMessage("The request url must not be null.");
+        }
 
         Request.Builder builder = new Request.Builder().url(url);
         if (headers != null && headers.size() > 0) {
@@ -118,17 +135,57 @@ public class OkHttpDataSupplier implements HttpDataSupplier {
         try {
             Response response = OkHttpManager.getInstance().getOkHttpClient().newCall(request).execute();
             Log.d(TAG, "postData response code=" + response.code());
-            if (response.isSuccessful()) {
-                return response.body().bytes();
-            }
+            pr = generateResponse(response);
         } catch (IOException e) {
             Log.e(TAG, "postData request error", e);
+            pr.setCode(-3);
+            pr.setMessage("getData request error");
         }
-        return null;
+        return pr;
+    }
+
+    @Override
+    public PostResponse postByteData(String url, byte[] data, Map<String, String> headers, int timeout) {
+
+        Log.d(TAG, "postData:" + url);
+
+        PostResponse pr = new PostResponse();
+        if (StringUtils.isEmpty(url)) {
+            pr.setCode(-1);
+            pr.setMessage("The request url must not be null.");
+        }
+        RequestBody body = new ProtoBufRequestBody(data);
+
+        Request.Builder builder = new Request.Builder().url(url);
+        if (headers != null && headers.size() > 0) {
+            //headerBuffer for log
+            StringBuffer headerBuffer = new StringBuffer("[");
+            for (String name : headers.keySet()) {
+                String value = headers.get(name);
+                builder = builder.header(name, value);
+
+                headerBuffer.append(name);
+                headerBuffer.append("=");
+                headerBuffer.append(value);
+                headerBuffer.append(",");
+            }
+            headerBuffer.append("]");
+            Log.d(TAG, "postData headers:" + headerBuffer);
+        }
+        Request request = builder.post(body).build();
+        try {
+            Response response = OkHttpManager.getInstance().getOkHttpClient().newCall(request).execute();
+            Log.d(TAG, "postData response code=" + response.code());
+            pr = generateResponse(response);
+        } catch (IOException e) {
+            Log.e(TAG, "postData request error", e);
+            pr.setCode(-3);
+            pr.setMessage("getData request error");
+        }
+        return pr;
     }
 
     /**
-     *
      * @param url
      * @param fileParam 文件的参数名
      * @param file
@@ -137,14 +194,16 @@ public class OkHttpDataSupplier implements HttpDataSupplier {
      * @return
      */
     @Override
-    public int uploadFile(String url, String fileParam, File file, Map<String, String> params, Map<String, String> headers) {
+    public PostResponse uploadFile(String url, String fileParam, File file, Map<String, String> params, Map<String, String> headers) {
         Log.d(TAG, "uploadFile url=" + url + ",file=" + file);
+        PostResponse pr = new PostResponse();
         if (StringUtils.isEmpty(url)) {
-            return -1;
+            pr.setCode(-1);
+            pr.setMessage("The request url must not be null.");
         }
-
         if (file == null || !file.exists()) {
-            return -2;
+            pr.setCode(-2);
+            pr.setMessage("The uploaded file is not exists or null.");
         }
         RequestBody fileBody = RequestBody.create(MediaType.parse("application/octet-stream"), file);
         MultipartBody.Builder bodyBuilder = new MultipartBody.Builder()
@@ -154,7 +213,7 @@ public class OkHttpDataSupplier implements HttpDataSupplier {
                         "form-data; name=\"" + fileParam + "\"; filename=\"" + file.getAbsolutePath() + "\""), fileBody);
 
         if (params != null && params.size() > 0) {
-            StringBuffer paramsBuffer = new StringBuffer();
+            StringBuffer paramsBuffer = new StringBuffer("[");
             for (String key : params.keySet()) {
                 String value = params.get(key);
                 bodyBuilder = bodyBuilder.addFormDataPart(key, value);
@@ -191,12 +250,27 @@ public class OkHttpDataSupplier implements HttpDataSupplier {
         try {
             Response response = call.execute();
             Log.d(TAG, "uploadFile response code=" + response.code() + ",message=" + response.message());
-            return response.code();
+            pr = generateResponse(response);
         } catch (IOException e) {
             Log.e(TAG, "uploadFile failue ioexception", e);
-            return -3;
+            pr.setCode(-3);
+            pr.setMessage("uploadFile failue ioexception:" + e.getMessage());
         }
+
+        return pr;
     }
 
+    private PostResponse generateResponse(Response response) throws IOException {
+        PostResponse pr = new PostResponse();
+        pr.setCode(response.code());
+        pr.setMessage(response.message());
+        if (response.isSuccessful()) {
+            pr.setData(response.body().bytes());
+        }
+        for (String key : response.headers().names()) {
+            pr.putResponseHeader(key, response.header(key));
+        }
 
+        return pr;
+    }
 }

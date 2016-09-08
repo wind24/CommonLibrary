@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.widget.TextView;
 
 import com.commonlibrary.http.HttpDataManager;
+import com.commonlibrary.http.PostResponse;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -22,13 +23,13 @@ public class MainActivity extends AppCompatActivity {
 
         label = (TextView) findViewById(R.id.label);
 
-        final String url = "http://www.baidu.com/";
+        final String url = "http://www.github.com/";
         Observable.create(new Observable.OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> subscriber) {
-                byte[] data = HttpDataManager.getInstance().getSupplier().getData(url, null, null,30000);
-                if (data != null) {
-                    subscriber.onNext(new String(data));
+                PostResponse response = HttpDataManager.getInstance().getSupplier().postData(url, null, null,30000);
+                if (response.isSuccess() && response.getData() != null) {
+                    subscriber.onNext(new String(response.getData()));
                     subscriber.onCompleted();
                 } else {
                     subscriber.onError(null);

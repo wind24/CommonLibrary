@@ -1,10 +1,7 @@
 package com.commonlibrary.http;
 
 import java.io.File;
-import java.util.List;
 import java.util.Map;
-
-import okhttp3.Callback;
 
 /**
  * Created by huangzefeng on 8/9/16.
@@ -13,10 +10,12 @@ import okhttp3.Callback;
  */
 public interface HttpDataSupplier {
 
-    public byte[] getData(String url, Map<String,String> params,Map<String,String> headers,int timeout);
+    public PostResponse getData(String url, Map<String,String> params,Map<String,String> headers,int timeout);
 
-    public byte[] postData(String url, Map<String,String> params, Map<String,String> headers, int timeout);
+    public PostResponse postData(String url, Map<String,String> params, Map<String,String> headers, int timeout);
 
-    public int uploadFile(String url,String fileParam, File file, Map<String,String> params, Map<String,String> headers);
+    public PostResponse postByteData(String url, byte[] data,Map<String,String> headers,int timeout);
+
+    public PostResponse uploadFile(String url,String fileParam, File file, Map<String,String> params, Map<String,String> headers);
 
 }
