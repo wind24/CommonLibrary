@@ -17,6 +17,6 @@ public interface HttpDataSupplier {
 
     public byte[] postData(String url, Map<String,String> params, Map<String,String> headers, int timeout);
 
-    public void uploadFile(String url, File file, Map<String,String> params, Map<String,String> headers, UploadFileCallback callback);
+    public int uploadFile(String url,String fileParam, File file, Map<String,String> params, Map<String,String> headers);
 
 }

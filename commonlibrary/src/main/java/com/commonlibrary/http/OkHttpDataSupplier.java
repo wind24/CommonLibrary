@@ -127,26 +127,31 @@ public class OkHttpDataSupplier implements HttpDataSupplier {
         return null;
     }
 
+    /**
+     *
+     * @param url
+     * @param fileParam 文件的参数名
+     * @param file
+     * @param params
+     * @param headers
+     * @return
+     */
     @Override
-    public void uploadFile(String url, File file, Map<String, String> params, Map<String, String> headers, UploadFileCallback callback) {
+    public int uploadFile(String url, String fileParam, File file, Map<String, String> params, Map<String, String> headers) {
         Log.d(TAG, "uploadFile url=" + url + ",file=" + file);
         if (StringUtils.isEmpty(url)) {
-            if (callback != null) {
-                callback.onFailue(-1, "url is cannot be null.");
-            }
+            return -1;
         }
 
         if (file == null || !file.exists()) {
-            if (callback != null) {
-                callback.onFailue(-2, "file is cannot be null.");
-            }
+            return -2;
         }
         RequestBody fileBody = RequestBody.create(MediaType.parse("application/octet-stream"), file);
         MultipartBody.Builder bodyBuilder = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addPart(Headers.of(
                         "Content-Disposition",
-                        "form-data; name=\"mFile\"; filename=\"" + file.getAbsolutePath() + "\""), fileBody);
+                        "form-data; name=\"" + fileParam + "\"; filename=\"" + file.getAbsolutePath() + "\""), fileBody);
 
         if (params != null && params.size() > 0) {
             StringBuffer paramsBuffer = new StringBuffer();
@@ -186,20 +191,10 @@ public class OkHttpDataSupplier implements HttpDataSupplier {
         try {
             Response response = call.execute();
             Log.d(TAG, "uploadFile response code=" + response.code() + ",message=" + response.message());
-            if (response.isSuccessful()) {
-                if (callback != null) {
-                    callback.onResponse(response.body().string());
-                }
-            } else {
-                if (callback != null) {
-                    callback.onFailue(response.code(), response.message());
-                }
-            }
+            return response.code();
         } catch (IOException e) {
             Log.e(TAG, "uploadFile failue ioexception", e);
-            if (callback != null) {
-                callback.onFailue(-3, e.getMessage());
-            }
+            return -3;
         }
     }
 
