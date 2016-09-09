@@ -74,3 +74,9 @@ build/intermediates/dex-cache/cache.xml
 local.properties
 
 local.properties
+.idea/libraries/bolts_tasks_1_4_0.xml
+.idea/libraries/drawee_0_13_0.xml
+.idea/libraries/fbcore_0_13_0.xml
+.idea/libraries/fresco_0_13_0.xml
+.idea/libraries/imagepipeline_0_13_0.xml
+.idea/libraries/imagepipeline_base_0_13_0.xml
