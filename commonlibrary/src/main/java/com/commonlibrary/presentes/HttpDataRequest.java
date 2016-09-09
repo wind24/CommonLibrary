@@ -1,5 +1,7 @@
 package com.commonlibrary.presentes;
 
+import android.util.Log;
+
 import com.commonlibrary.http.HttpDataManager;
 import com.commonlibrary.http.PostResponse;
 
@@ -9,21 +11,29 @@ import java.util.Map;
 /**
  * Created by huangzefeng on 9/9/16.
  */
-public class StringDataRequest extends DataRequest<String> {
-    @Override
-    public String generateRequest() {
-        PostResponse response = HttpDataManager.getInstance().getSupplier().postData(url, null, null,30000);
-        if (response.isSuccess() && response.getData() != null) {
-            return new String(response.getData());
-        }
-        return null;
-    }
+public  class HttpDataRequest extends DataRequest<PostResponse> {
+
+    protected String url;
+    protected Map<String, String> params;
+    protected Map<String, String> headers;
 
     public static Builder newBuilder(){
         return new Builder();
     }
 
-    public static class Builder<T> {
+    @Override
+    public PostResponse generateRequest() {
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        PostResponse response = HttpDataManager.getInstance().getSupplier().postData(url, null, null,30000);
+        Log.d("Test","thread:"+Thread.currentThread().getName());
+        return response;
+    }
+
+    public static class Builder {
         private String url;
         private Map<String, String> params;
         private Map<String, String> headers;
@@ -60,8 +70,8 @@ public class StringDataRequest extends DataRequest<String> {
             return this;
         }
 
-        public StringDataRequest build(){
-            StringDataRequest request = new StringDataRequest();
+        public HttpDataRequest build(){
+            HttpDataRequest request = new HttpDataRequest();
             request.url = url;
             request.params = params;
             request.headers = headers;

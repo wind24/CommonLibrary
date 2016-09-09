@@ -7,10 +7,6 @@ import java.util.Map;
  */
 public abstract class DataRequest<T> {
 
-    protected String url;
-    protected Map<String, String> params;
-    protected Map<String, String> headers;
-
     public abstract T generateRequest();
 
 }
