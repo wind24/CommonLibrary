@@ -1,13 +1,16 @@
 package com.datapresenter.controllers;
 
-import com.commonlibrary.presentes.DataRequest;
+
+import com.datapresenter.datasource.DataSource;
 
 /**
  * Created by huangzefeng on 13/9/16.
  */
 public interface Controller {
 
-    public void executeRequest(DataRequest request);
+    public <T> DataSource<T> getDataSource();
+
+    public <REQUEST> Controller executeRequest(REQUEST request);
 
     public <ACTION> void onSubscribe(ACTION action);
 

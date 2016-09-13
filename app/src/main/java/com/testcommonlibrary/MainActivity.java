@@ -9,6 +9,8 @@ import android.widget.TextView;
 import com.commonlibrary.datasource.SimpleDataSource;
 import com.commonlibrary.http.PostResponse;
 import com.commonlibrary.presentes.HttpDataRequest;
+import com.datapresenter.controllers.Controller;
+import com.datapresenter.requests.DataRequest;
 
 import java.util.concurrent.Executors;
 
@@ -22,6 +24,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         label = (TextView) findViewById(R.id.label);
+
+        Controller controller = null;
+        DataRequest request = null;
+        controller.executeRequest(request).onSubscribe(null);
 
 //        Observable.create(new Observable.OnSubscribe<String>() {
 //            @Override
