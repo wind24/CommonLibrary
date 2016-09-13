@@ -5,4 +5,6 @@ package com.datapresenter.datasource;
  */
 public interface DataSource<T> {
 
+    public T getResult();
+
 }

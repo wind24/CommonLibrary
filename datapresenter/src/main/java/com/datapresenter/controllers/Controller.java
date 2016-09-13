@@ -12,6 +12,6 @@ public interface Controller {
 
     public <REQUEST> Controller executeRequest(REQUEST request);
 
-    public <ACTION> void onSubscribe(ACTION action);
+    public <ACTION extends ActionCallback> void onSubscribe(ACTION action);
 
 }
