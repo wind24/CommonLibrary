@@ -9,11 +9,18 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.testcommonlibrary.MainActivity">
 
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/input"/>
+
     <Button
         android:id="@+id/btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="test"
+        android:layout_below="@+id/input"
         android:onClick="loadWeb"/>
 
     <TextView

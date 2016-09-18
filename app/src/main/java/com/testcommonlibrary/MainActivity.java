@@ -2,32 +2,28 @@ package com.testcommonlibrary;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
-
-import com.commonlibrary.datasource.SimpleDataSource;
 import com.commonlibrary.http.PostResponse;
-import com.commonlibrary.presentes.HttpDataRequest;
-import com.datapresenter.controllers.Controller;
-import com.datapresenter.requests.DataRequest;
-
+import com.datapresenter.datarequests.HttpDataRequest;
+import com.datapresenter.observables.Callback;
+import com.datapresenter.observables.SimpleTaskController;
 import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
 
     private TextView label;
+    private EditText input;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        input = (EditText) findViewById(R.id.input);
         label = (TextView) findViewById(R.id.label);
 
-        Controller controller = null;
-        DataRequest request = null;
-        controller.executeRequest(request).onSubscribe(null);
 
 //        Observable.create(new Observable.OnSubscribe<String>() {
 //            @Override
@@ -58,26 +54,26 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void loadWeb(View v) {
-        final String url = "http://www.bejson.com/";
+        final String url = input.getText().toString();
         final HttpDataRequest request = HttpDataRequest.newBuilder().setUrl(url).build();
 
-        SimpleDataSource<PostResponse> source = new SimpleDataSource<>(Executors.newFixedThreadPool(2));
-        source.subscribe(request);
+        SimpleTaskController<PostResponse> source = new SimpleTaskController<>(Executors.newFixedThreadPool(2));
+        source.callwith(request).subscribe(new Callback<PostResponse>() {
+            @Override public void onResult(PostResponse result) {
+                if (result != null) {
+                    label.setText(new String(result.getData()));
+                }
+            }
 
-        PostResponse response = source.getResult();
-        if (response != null) {
-            label.setText("finish bejson");
-        }
-        Log.d("Test","thread1:"+Thread.currentThread().getName());
-        String url1 = "http://www.sina.com";
-        HttpDataRequest request1 = HttpDataRequest.newBuilder().setUrl(url1).build();
-        source.subscribe(request1);
-        response = source.getResult();
-        if (response != null) {
-            String str = new String(response.getData());
-            Log.d("Test","thread1:"+Thread.currentThread().getName());
-            label.append("finish sina");
-        }
+            @Override public void onFailue(int code, String msg) {
+                label.setText("error code="+code+",message="+msg);
+            }
+
+            @Override public void onProgress(float percent) {
+
+            }
+        });
+
     }
 
 

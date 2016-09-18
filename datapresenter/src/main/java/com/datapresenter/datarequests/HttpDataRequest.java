@@ -1,10 +1,8 @@
-package com.commonlibrary.presentes;
+package com.datapresenter.datarequests;
 
 import android.util.Log;
-
 import com.commonlibrary.http.HttpDataManager;
 import com.commonlibrary.http.PostResponse;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,13 +21,9 @@ public  class HttpDataRequest extends DataRequest<PostResponse> {
 
     @Override
     public PostResponse generateRequest() {
-        try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        long start = System.currentTimeMillis();
         PostResponse response = HttpDataManager.getInstance().getSupplier().postData(url, null, null,30000);
-        Log.d("Test","thread:"+Thread.currentThread().getName());
+        Log.d("Test","generate Time:"+(System.currentTimeMillis() - start));
         return response;
     }
 
