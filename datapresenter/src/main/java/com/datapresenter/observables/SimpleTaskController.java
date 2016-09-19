@@ -37,12 +37,8 @@ public class SimpleTaskController<T> implements TaskController<T> {
     FutureTask<T> future = new FutureTask<T>(callable) {
       @Override protected void done() {
         super.done();
-        final T response;
         try {
-          Log.d("Test", "task thread id=" + Thread.currentThread().getName());
-          long start = System.currentTimeMillis();
-          response = get();
-          Log.d("Test", "subscribe time=" + (System.currentTimeMillis() - start));
+          final T response = get();
           ThreadUtil.runInUIThread(new Runnable() {
             @Override public void run() {
               if (callback != null) {
@@ -52,14 +48,10 @@ public class SimpleTaskController<T> implements TaskController<T> {
           });
         } catch (InterruptedException e) {
           e.printStackTrace();
-          final int code = -1;
-          final String msg = e.getMessage();
-          callbackFailue(code, msg, callback);
+          callbackFailue(-1, e.getMessage(), callback);
         } catch (ExecutionException e) {
           e.printStackTrace();
-          final int code = -2;
-          final String msg = e.getMessage();
-          callbackFailue(code, msg, callback);
+          callbackFailue(-2, e.getMessage(), callback);
         }
       }
     };
