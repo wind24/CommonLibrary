@@ -1,1 +1,1 @@
-include ':app', ':commonlibrary', ':commonlibrarytest', ':datapresenter'
+include ':app', ':commonlibrary', ':commonlibrarytest', ':datapresenter', ':dataworkers'

@@ -11,6 +11,8 @@ import com.datapresenter.observables.Callback;
 import com.datapresenter.observables.SimpleTaskController;
 import java.util.concurrent.Executors;
 
+import rx.Observable;
+
 public class MainActivity extends AppCompatActivity {
 
     private TextView label;

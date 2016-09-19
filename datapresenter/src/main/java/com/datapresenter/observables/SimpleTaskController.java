@@ -1,8 +1,8 @@
 package com.datapresenter.observables;
 
-import android.util.Log;
 import com.commonlibrary.threadmanager.ThreadUtil;
 import com.datapresenter.datarequests.DataRequest;
+
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
