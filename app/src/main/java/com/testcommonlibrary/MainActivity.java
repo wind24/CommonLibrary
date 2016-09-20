@@ -5,13 +5,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
-import com.commonlibrary.http.PostResponse;
-import com.datapresenter.datarequests.HttpDataRequest;
-import com.datapresenter.observables.Callback;
-import com.datapresenter.observables.SimpleTaskController;
-import java.util.concurrent.Executors;
 
-import rx.Observable;
+import com.commonlibrary.dataworkers.controller.ActionCallback;
+import com.commonlibrary.dataworkers.controller.SimpleHttpController;
+import com.commonlibrary.dataworkers.request.HttpDataRequest;
+import com.commonlibrary.http.PostResponse;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -59,19 +57,22 @@ public class MainActivity extends AppCompatActivity {
         final String url = input.getText().toString();
         final HttpDataRequest request = HttpDataRequest.newBuilder().setUrl(url).build();
 
-        SimpleTaskController<PostResponse> source = new SimpleTaskController<>(Executors.newFixedThreadPool(2));
-        source.callwith(request).subscribe(new Callback<PostResponse>() {
-            @Override public void onResult(PostResponse result) {
+        SimpleHttpController source = new SimpleHttpController();
+        source.setRequest(request).subscribe(new ActionCallback<PostResponse>() {
+            @Override
+            public void onResult(PostResponse result) {
                 if (result != null) {
                     label.setText(new String(result.getData()));
                 }
             }
 
-            @Override public void onFailue(int code, String msg) {
-                label.setText("error code="+code+",message="+msg);
+            @Override
+            public void onFailue(int code, String msg) {
+
             }
 
-            @Override public void onProgress(float percent) {
+            @Override
+            public void onProgress(float percent) {
 
             }
         });
