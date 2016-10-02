@@ -1,4 +1,4 @@
-package com.commonlibrary.threadmanager;
+package com.commonlibrary.utils;
 
 import android.os.Handler;
 import android.os.Looper;
