@@ -186,12 +186,12 @@ public class OkHttpDataSupplier implements HttpDataSupplier {
     }
 
     /**
-     * @param url
+     * @param url 请求地址
      * @param fileParam 文件的参数名
-     * @param file
-     * @param params
-     * @param headers
-     * @return
+     * @param file 保存文件
+     * @param params 请求参数
+     * @param headers 协议头
+     * @return PostResponse
      */
     @Override
     public PostResponse uploadFile(String url, String fileParam, File file, Map<String, String> params, Map<String, String> headers) {
