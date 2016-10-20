@@ -9,6 +9,7 @@ import android.widget.Toast;
 import com.commonlibrary.datarequests.OnRequestCallback;
 import com.commonlibrary.datarequests.requests.HttpDataRequest;
 import com.commonlibrary.http.PostResponse;
+import com.commonlibrary.utils.RegexUtils;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -21,6 +22,8 @@ public class MainActivity extends AppCompatActivity {
 
     input = (EditText) findViewById(R.id.input);
     label = (TextView) findViewById(R.id.label);
+
+    label.setText("is email:"+ RegexUtils.isEmail("huangzefeng@hello"));
 
     //Observable.create(new Observable.OnSubscribe<String>() {
     //    @Override
