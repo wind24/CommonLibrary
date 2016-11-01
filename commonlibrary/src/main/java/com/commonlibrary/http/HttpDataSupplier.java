@@ -16,6 +16,8 @@ public interface HttpDataSupplier {
 
     public PostResponse postByteData(String url, byte[] data,Map<String,String> headers,int timeout);
 
+    public PostResponse postJsonData(String url,String json,Map<String,String> headers,int timeout);
+
     public PostResponse uploadFile(String url,String fileParam, File file, Map<String,String> params, Map<String,String> headers);
 
 }
