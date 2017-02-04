@@ -100,3 +100,5 @@ local.properties
 .idea/libraries/support_v4_24_2_0.xml
 
 .idea/libraries/support_vector_drawable_24_2_0.xml
+
+datapresenter/build/
